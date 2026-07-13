@@ -35,19 +35,22 @@ export const metadata: Metadata = {
   creator: "Betsegaw Merid",
 
   openGraph: {
-    title: "Betsegaw Merid | Full-Stack Developer",
-
-    description:
-      "Explore my portfolio featuring full-stack web development, embedded systems, and software engineering projects.",
-
-    url: "https://portfolio-seven-orcin-97.vercel.app/",
-
-    siteName: "Betsegaw Portfolio",
-
-    locale: "en_US",
-
-    type: "website",
-  },
+  title: "Betsegaw Merid | Full-Stack Developer",
+  description:
+    "Explore my portfolio featuring full-stack web development, embedded systems, and software engineering projects.",
+  url: "https://portfolio-seven-orcin-97.vercel.app",
+  siteName: "Betsegaw Portfolio",
+  images: [
+    {
+      url: "/og-image.png",
+      width: 1200,
+      height: 630,
+      alt: "Betsegaw Merid Portfolio",
+    },
+  ],
+  locale: "en_US",
+  type: "website",
+},
 
   twitter: {
     card: "summary_large_image",
@@ -56,7 +59,8 @@ export const metadata: Metadata = {
 
     description:
       "Portfolio showcasing modern web applications, embedded systems, and software engineering projects.",
-  },
+       images: ["/og-image.png"],
+    },
 
   robots: {
     index: true,
