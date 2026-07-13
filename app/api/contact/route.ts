@@ -18,8 +18,8 @@ export async function POST(req: Request) {
 
     // Send the email to your personal email inbox
     await resend.emails.send({
-      from: "Portfolio Form <onboarding@resend.dev>",
-      to: "your-personal-email@example.com", // <-- REPLACE THIS WITH YOUR REAL EMAIL
+      from: 'onboarding@resend.dev',
+      to: "betsegaw.merid@aastustudent.edu.et", 
       subject: `New Portfolio Message from ${name}`,
       text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
     });
