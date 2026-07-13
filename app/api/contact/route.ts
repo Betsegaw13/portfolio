@@ -1,21 +1,37 @@
 import { NextResponse } from "next/server";
+import { Resend } from "resend";
+
+// Initialize Resend using an environment variable for security
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
-  const body = await req.json();
+  try {
+    const body = await req.json();
+    const { name, email, message } = body;
 
-  const { name, email, message } = body;
+    if (!name || !email || !message) {
+      return NextResponse.json(
+        { error: "Missing fields" },
+        { status: 400 }
+      );
+    }
 
-  if (!name || !email || !message) {
+    // Send the email to your personal email inbox
+    await resend.emails.send({
+      from: "Portfolio Form <onboarding@resend.dev>",
+      to: "your-personal-email@example.com", // <-- REPLACE THIS WITH YOUR REAL EMAIL
+      subject: `New Portfolio Message from ${name}`,
+      text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+    });
+
     return NextResponse.json(
-      { error: "Missing fields" },
-      { status: 400 }
+      { success: true, message: "Message sent successfully!" }
+    );
+  } catch (error) {
+    console.error("Email error:", error);
+    return NextResponse.json(
+      { error: "Failed to send message" },
+      { status: 500 }
     );
   }
-
-  // For now we just log it (later we connect database or email)
-  console.log("Contact Form:", body);
-
-  return NextResponse.json(
-    { success: true, message: "Message received" }
-  );
 }
