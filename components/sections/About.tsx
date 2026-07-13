@@ -18,18 +18,20 @@ export default function About() {
           {/* Left side text */}
           <div>
             <p className="text-gray-700 leading-relaxed mb-4">
-              I am an Electrical and Computer Engineering student passionate
-              about building real-world systems that combine software and hardware.
+              I recently completed my fourth year in Electrical and Computer Engineering
+              at Addis Ababa Science and Technology University (AASTU). I enjoy building
+              software and hardware solutions that solve real-world problems through clean,
+              practical, and user-focused design.
             </p>
 
             <p className="text-gray-700 leading-relaxed mb-4">
-              My interests include full-stack development, embedded systems,
-              and UI/UX design. I enjoy turning ideas into practical applications.
+            My primary interests are Full-Stack Web Development, Embedded Systems, and
+            UI/UX Design. I enjoy creating modern web applications, working with new
+            technologies, and transforming ideas into functional products.
             </p>
 
             <p className="text-gray-700 leading-relaxed">
-              I am currently focused on improving my software engineering skills
-              and building strong portfolio projects.
+             I am committed to building impactful software solutions, embracing new technologies, and creating applications that combine functionality, performance, and great user experience.
             </p>
           </div>
 
