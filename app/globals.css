@@ -27,3 +27,33 @@ body {
 html {
   scroll-behavior: smooth;
 }
+.skills-track {
+  animation: skills-marquee 30s linear infinite;
+  will-change: transform;
+}
+
+.skills-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes skills-marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 640px) {
+  .skills-track {
+    animation-duration: 24s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skills-track {
+    animation: none;
+  }
+}
