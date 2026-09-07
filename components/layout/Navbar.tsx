@@ -1,535 +1,264 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 const navItems = [
-  { name: "Home", href: "#home" },
-  { name: "About", href: "#about" },
-  { name: "Skills", href: "#skills" },
-  { name: "Projects", href: "#projects" },
-  { name: "Contact", href: "#contact" },
+  { name: "Home", id: "home" },
+  { name: "About", id: "about" },
+  { name: "Skills", id: "skills" },
+  { name: "Projects", id: "projects" },
+  { name: "Contact", id: "contact" },
 ];
 
-const clamp = (
-  value: number,
-  min: number = 0,
-  max: number = 1
-) => Math.min(Math.max(value, min), max);
-
-const ease = (value: number) => {
-  const x = clamp(value);
-  return x * x * (3 - 2 * x);
-};
-
 export default function Navbar() {
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [mounted, setMounted] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [visible, setVisible] = useState(true);
 
-  /*
-   * ------------------------------------------------------------
-   * ENTRY ANIMATION
-   * ------------------------------------------------------------
-   */
+  /* =========================================================
+     SHOW / HIDE NAVBAR ON SCROLL
+     ========================================================= */
 
   useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setMounted(true);
-    }, 150);
+    let lastScrollY = window.scrollY;
 
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, []);
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
 
-  /*
-   * ------------------------------------------------------------
-   * SCROLL PROGRESS
-   * ------------------------------------------------------------
-   *
-   * 0 = fully open
-   * 1 = completely gone
-   *
-   * The calculation is based on the actual Hero and Contact
-   * positions rather than arbitrary page percentages.
-   */
-
-  useEffect(() => {
-    let frame: number | null = null;
-
-    const calculate = () => {
-      const hero = document.getElementById("home");
-      const contact = document.getElementById("contact");
-
-      if (!hero) {
-        setScrollProgress(0);
-        frame = null;
+      // Always show navbar at the very top
+      if (currentScrollY < 30) {
+        setVisible(true);
+        lastScrollY = currentScrollY;
         return;
       }
 
-      const viewport = window.innerHeight;
-      const scrollY = window.scrollY;
+      // Scrolling down → hide
+      if (currentScrollY > lastScrollY + 5) {
+        setVisible(false);
+        setMobileOpen(false);
+      }
 
-      const heroBottom =
-        hero.offsetTop + hero.offsetHeight;
+      // Scrolling up → show
+      else if (currentScrollY < lastScrollY - 5) {
+        setVisible(true);
+      }
 
-      /*
-       * Begin closing once the visitor is clearly
-       * leaving the Hero.
-       */
-      const start =
-        heroBottom - viewport * 0.3;
-
-      /*
-       * Finish around the Contact section.
-       */
-      const end = contact
-        ? contact.offsetTop +
-          contact.offsetHeight * 0.35
-        : start + viewport * 5;
-
-      const raw =
-        (scrollY - start) /
-        Math.max(end - start, 1);
-
-      setScrollProgress(clamp(raw));
-
-      frame = null;
+      lastScrollY = currentScrollY;
     };
 
-    const onScroll = () => {
-      if (frame !== null) return;
-
-      frame = window.requestAnimationFrame(
-        calculate
-      );
-    };
-
-    calculate();
-
-    window.addEventListener(
-      "scroll",
-      onScroll,
-      { passive: true }
-    );
-
-    window.addEventListener(
-      "resize",
-      onScroll
-    );
+    window.addEventListener("scroll", handleScroll, {
+      passive: true,
+    });
 
     return () => {
-      window.removeEventListener(
-        "scroll",
-        onScroll
-      );
-
-      window.removeEventListener(
-        "resize",
-        onScroll
-      );
-
-      if (frame !== null) {
-        window.cancelAnimationFrame(frame);
-      }
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
-  /*
-   * Smooth the scroll value.
-   */
-  const p = ease(scrollProgress);
+  /* =========================================================
+     SMOOTH SCROLL
+     ========================================================= */
 
-  /*
-   * ------------------------------------------------------------
-   * DESKTOP DIMENSIONS
-   * ------------------------------------------------------------
-   */
+  const scrollToSection = (id: string) => {
+    const section = document.getElementById(id);
 
-  const openWidth = 1740;
-  const closedWidth = 92;
+    if (section) {
+      const offset = 90;
 
-  const navbarWidth =
-    openWidth -
-    (openWidth - closedWidth) * p;
+      window.scrollTo({
+        top: section.offsetTop - offset,
+        behavior: "smooth",
+      });
+    }
 
-  const navbarHeight =
-    78 - 28 * p;
-
-  const top =
-    16 - 7 * p;
-
-  const right =
-    18 + 8 * p;
-
-  const radius =
-    20 + 22 * p;
-
-  /*
-   * The navbar first physically closes,
-   * then disappears.
-   */
-  const visibilityFade =
-    p < 0.76
-      ? 1
-      : 1 - (p - 0.76) / 0.24;
-
-  const opacity = mounted
-    ? clamp(visibilityFade)
-    : 0;
-
-  /*
-   * Content disappears before the shell.
-   */
-  const contentOpacity =
-    p < 0.48
-      ? 1
-      : clamp(1 - (p - 0.48) / 0.36);
-
-  /*
-   * Subtle movement toward the right.
-   */
-  const translateY =
-    -5 * p;
-
-  /*
-   * ------------------------------------------------------------
-   * MOBILE
-   * ------------------------------------------------------------
-   */
-
-  const mobileOpacity = mounted
-    ? 1
-    : 0;
+    setMobileOpen(false);
+  };
 
   return (
     <>
-      {/* ======================================================
-          DESKTOP / TABLET NAVBAR
-      ======================================================= */}
+      {/* =====================================================
+          DESKTOP NAVBAR
+          ===================================================== */}
 
       <header
-        className="
+        className={`
           fixed
-          left-0
+          left-1/2
           top-0
           z-[100]
           hidden
-          w-full
-          justify-end
-          pointer-events-none
-          lg:flex
-        "
+          -translate-x-1/2
+          md:block
+          transition-all
+          duration-500
+          ease-out
+          ${
+            visible
+              ? "translate-y-0 opacity-100"
+              : "-translate-y-24 pointer-events-none opacity-0"
+          }
+        `}
       >
+        {/* Outer glass shell */}
         <nav
           aria-label="Main navigation"
           className="
-            pointer-events-auto
-            relative
-            overflow-hidden
-            border
-            bg-[#0B1120]/90
-            backdrop-blur-xl
-            shadow-[0_18px_70px_rgba(0,0,0,0.28)]
-            will-change-[width,transform,opacity]
+            flex
+            w-fit
+            items-center
+            justify-center
+            rounded-b-[30px]
+            border-x
+            border-b
+            border-[#38BDF8]/10
+            bg-[#0B1120]/55
+            px-5
+            py-4
+            shadow-[0_12px_40px_rgba(0,0,0,0.18)]
+            backdrop-blur-[24px]
           "
-          style={{
-            width: `min(
-              calc(100vw - ${right * 2}px),
-              ${navbarWidth}px
-            )`,
-            height: `${navbarHeight}px`,
-            marginTop: `${top}px`,
-            marginRight: `${right}px`,
-            paddingLeft: `${32 - 15 * p}px`,
-            paddingRight: `${32 - 15 * p}px`,
-            borderRadius: `${radius}px`,
-            borderColor: `rgba(56,189,248,${
-              0.12 * (1 - p) + 0.07
-            })`,
-            backgroundColor: `rgba(11,17,32,${
-              0.82 + p * 0.12
-            })`,
-            opacity,
-            transform: `translate3d(0,${translateY}px,0)`,
-            transition:
-              "width 700ms cubic-bezier(0.16,1,0.3,1)," +
-              "height 700ms cubic-bezier(0.16,1,0.3,1)," +
-              "margin-top 700ms cubic-bezier(0.16,1,0.3,1)," +
-              "margin-right 700ms cubic-bezier(0.16,1,0.3,1)," +
-              "padding 700ms cubic-bezier(0.16,1,0.3,1)," +
-              "border-radius 700ms cubic-bezier(0.16,1,0.3,1)," +
-              "opacity 300ms ease",
-          }}
         >
+          {/* Inner navigation pill */}
           <div
             className="
               flex
-              h-full
-              w-full
               items-center
+              gap-1
+              rounded-full
+              border
+              border-white/10
+              bg-[#111827]/80
+              px-2
+              py-2
+              shadow-[0_4px_20px_rgba(0,0,0,0.18)]
             "
-            style={{
-              opacity: contentOpacity,
-            }}
           >
-            {/* ==================================================
-                BRAND
-            ================================================== */}
-
-            <a
-              href="#home"
-              className="
-                group
-                flex
-                shrink-0
-                items-center
-                gap-3
-              "
-            >
-              <span
+            {navItems.map((item) => (
+              <button
+                key={item.name}
+                type="button"
+                onClick={() => scrollToSection(item.id)}
+                onMouseEnter={() =>
+                  setHoveredItem(item.name)
+                }
+                onMouseLeave={() =>
+                  setHoveredItem(null)
+                }
                 className="
-                  flex
-                  shrink-0
-                  items-center
-                  justify-center
-                  rounded-full
-                  border-2
-                  border-[#38BDF8]
-                  bg-[#111827]
-                  font-bold
-                  text-[#F8FAFC]
-                  shadow-[0_0_25px_rgba(56,189,248,0.10)]
-                "
-                style={{
-                  width: `${46 - 8 * p}px`,
-                  height: `${46 - 8 * p}px`,
-                  fontSize: `${14 - 2 * p}px`,
-                }}
-              >
-                BM
-              </span>
-
-              <div
-                className="
-                  overflow-hidden
+                  group
+                  relative
                   whitespace-nowrap
-                "
-                style={{
-                  width: `${210 * (1 - p)}px`,
-                  opacity: clamp(1 - p * 1.4),
-                }}
-              >
-                <p
-                  className="
-                    text-sm
-                    font-bold
-                    tracking-[0.28em]
-                    text-[#F8FAFC]
-                  "
-                >
-                  BETSEGAW
-                </p>
-
-                <p
-                  className="
-                    mt-0.5
-                    text-[9px]
-                    tracking-[0.13em]
-                    text-[#94A3B8]
-                  "
-                >
-                  Electrical & Computer Engineer
-                </p>
-              </div>
-            </a>
-
-            {/* ==================================================
-                NAVIGATION
-            ================================================== */}
-
-            <div
-              className="
-                absolute
-                left-1/2
-                hidden
-                -translate-x-1/2
-                items-center
-                lg:flex
-              "
-              style={{
-                gap: `${2 + 2 * (1 - p)}px`,
-                opacity: clamp(1 - p * 1.35),
-                transform:
-                  `translateX(-50%) translateX(${p * 22}px)`,
-              }}
-            >
-              {navItems.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="
-                    whitespace-nowrap
-                    rounded-full
-                    font-medium
-                    text-[#94A3B8]
-                    transition-all
-                    duration-200
-                    hover:bg-[#38BDF8]/10
-                    hover:text-[#38BDF8]
-                  "
-                  style={{
-                    padding: `${8 - 2 * p}px ${
-                      13 - 4 * p
-                    }px`,
-                    fontSize: `${13 - 1 * p}px`,
-                  }}
-                >
-                  {item.name}
-                </a>
-              ))}
-            </div>
-
-            {/* ==================================================
-                RIGHT SIDE
-            ================================================== */}
-
-            <div
-              className="
-                ml-auto
-                flex
-                shrink-0
-                items-center
-              "
-            >
-              <a
-                href="/resume/Betsegaw_Merid_CV.pdf"
-                download
-                className="
                   rounded-full
-                  bg-[#38BDF8]
-                  font-semibold
-                  text-[#0B1120]
-                  transition-all
+                  px-4
+                  py-2
+                  text-[13px]
+                  font-medium
+                  text-[#CBD5E1]
+                  transition-colors
                   duration-200
-                  hover:bg-[#0EA5E9]
-                  hover:shadow-[0_0_25px_rgba(56,189,248,0.18)]
+                  hover:text-[#38BDF8]
                 "
-                style={{
-                  padding: `${11 - 2 * p}px ${
-                    22 - 6 * p
-                  }px`,
-                  fontSize: `${13 - 1 * p}px`,
-                }}
               >
-                ↓ <span>Download CV</span>
-              </a>
-            </div>
+                {/* =================================================
+                    ROLLING / SLIDING HOVER EFFECT
+                    ================================================= */}
+
+                {hoveredItem === item.name && (
+                  <motion.span
+                    layoutId="navbar-hover-pill"
+                    className="
+                      absolute
+                      inset-0
+                      rounded-full
+                      bg-[#38BDF8]/10
+                      ring-1
+                      ring-inset
+                      ring-[#38BDF8]/15
+                    "
+                    transition={{
+                      type: "spring",
+                      stiffness: 450,
+                      damping: 30,
+                      mass: 0.6,
+                    }}
+                  />
+                )}
+
+                {/* Text */}
+                <span className="relative z-10">
+                  {item.name}
+                </span>
+
+                {/* Tiny underline */}
+                <span
+                  className="
+                    absolute
+                    bottom-[5px]
+                    left-1/2
+                    h-px
+                    w-0
+                    -translate-x-1/2
+                    bg-[#38BDF8]
+                    transition-all
+                    duration-300
+                    group-hover:w-4
+                  "
+                />
+              </button>
+            ))}
           </div>
         </nav>
       </header>
 
-      {/* ======================================================
+      {/* =====================================================
           MOBILE NAVBAR
-      ======================================================= */}
+          ===================================================== */}
 
       <header
-        className="
+        className={`
           fixed
-          left-4
-          right-4
+          inset-x-4
           top-4
           z-[100]
-          lg:hidden
-        "
-        style={{
-          opacity: mobileOpacity,
-        }}
+          md:hidden
+          transition-all
+          duration-500
+          ease-out
+          ${
+            visible
+              ? "translate-y-0 opacity-100"
+              : "-translate-y-24 pointer-events-none opacity-0"
+          }
+        `}
       >
         <nav
+          aria-label="Mobile navigation"
           className="
-            relative
+            overflow-hidden
             rounded-2xl
             border
-            border-[#38BDF8]/10
-            bg-[#0B1120]/90
+            border-[#38BDF8]/15
+            bg-[#0B1120]/75
             shadow-[0_18px_60px_rgba(0,0,0,0.30)]
-            backdrop-blur-xl
+            backdrop-blur-[24px]
           "
         >
-          <div
-            className="
-              flex
-              h-[64px]
-              items-center
-              justify-between
-              px-4
-            "
-          >
-            <a
-              href="#home"
-              onClick={() =>
-                setMenuOpen(false)
-              }
-              className="
-                flex
-                items-center
-                gap-2.5
-              "
-            >
-              <span
-                className="
-                  flex
-                  h-10
-                  w-10
-                  items-center
-                  justify-center
-                  rounded-full
-                  border-2
-                  border-[#38BDF8]
-                  bg-[#111827]
-                  text-xs
-                  font-bold
-                  text-[#F8FAFC]
-                "
-              >
-                BM
-              </span>
+          {/* ===================================================
+              MOBILE TOP BAR
+              =================================================== */}
 
-              <div>
-                <p
-                  className="
-                    text-xs
-                    font-bold
-                    tracking-[0.2em]
-                    text-[#F8FAFC]
-                  "
-                >
-                  BETSEGAW
-                </p>
-
-                <p
-                  className="
-                    text-[8px]
-                    tracking-[0.08em]
-                    text-[#94A3B8]
-                  "
-                >
-                  ENGINEER
-                </p>
-              </div>
-            </a>
-
+          <div className="flex h-[58px] items-center justify-end px-4">
             <button
               type="button"
               aria-label={
-                menuOpen
-                  ? "Close menu"
-                  : "Open menu"
+                mobileOpen
+                  ? "Close navigation menu"
+                  : "Open navigation menu"
               }
-              aria-expanded={menuOpen}
+              aria-expanded={mobileOpen}
               onClick={() =>
-                setMenuOpen((value) => !value)
+                setMobileOpen((value) => !value)
               }
               className="
                 flex
@@ -539,99 +268,97 @@ export default function Navbar() {
                 justify-center
                 rounded-full
                 border
-                border-[#38BDF8]/20
-                bg-[#111827]
-                text-xl
-                text-[#F8FAFC]
-                transition-colors
-                hover:border-[#38BDF8]
+                border-white/10
+                bg-white/5
+                text-white
+                transition-all
+                duration-300
+                hover:border-[#38BDF8]/40
+                hover:bg-[#38BDF8]/10
                 hover:text-[#38BDF8]
               "
             >
-              {menuOpen ? "×" : "☰"}
+              <span
+                className={`
+                  text-xl
+                  leading-none
+                  transition-transform
+                  duration-300
+                  ${
+                    mobileOpen
+                      ? "rotate-90"
+                      : "rotate-0"
+                  }
+                `}
+              >
+                {mobileOpen ? "×" : "☰"}
+              </span>
             </button>
           </div>
 
-          {/* MOBILE MENU */}
+          {/* ===================================================
+              MOBILE MENU
+              =================================================== */}
 
           <div
             className={`
               overflow-hidden
               transition-all
               duration-500
+              ease-out
               ${
-                menuOpen
-                  ? "max-h-[600px] opacity-100"
+                mobileOpen
+                  ? "max-h-[500px] opacity-100"
                   : "max-h-0 opacity-0"
               }
             `}
           >
-            <div className="border-t border-[#1E293B] px-5 py-3">
-              {navItems.map(
-                (item, index) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    onClick={() =>
-                      setMenuOpen(false)
-                    }
-                    className="
-                      flex
-                      items-center
-                      justify-between
-                      border-b
-                      border-white/5
-                      py-4
-                      text-sm
-                      font-medium
-                      text-[#94A3B8]
-                      transition-colors
-                      hover:text-[#38BDF8]
-                    "
-                  >
-                    <span>
-                      {item.name}
+            <div
+              className="
+                border-t
+                border-white/10
+                px-5
+                py-3
+              "
+            >
+              {navItems.map((item, index) => (
+                <button
+                  key={item.name}
+                  type="button"
+                  onClick={() =>
+                    scrollToSection(item.id)
+                  }
+                  className="
+                    flex
+                    w-full
+                    items-center
+                    justify-between
+                    border-b
+                    border-white/5
+                    py-4
+                    text-left
+                    text-sm
+                    font-medium
+                    text-[#CBD5E1]
+                    transition-all
+                    duration-300
+                    hover:pl-2
+                    hover:text-[#38BDF8]
+                  "
+                >
+                  <span className="flex items-center gap-3">
+                    <span className="text-[10px] tracking-wider text-[#38BDF8]/40">
+                      0{index + 1}
                     </span>
 
-                    <span
-                      className="
-                        font-mono
-                        text-[9px]
-                        text-[#38BDF8]/40
-                      "
-                    >
-                      {String(index + 1).padStart(
-                        2,
-                        "0"
-                      )}
-                    </span>
-                  </a>
-                )
-              )}
+                    <span>{item.name}</span>
+                  </span>
 
-              <a
-                href="/resume/Betsegaw_Merid_CV.pdf"
-                download
-                onClick={() =>
-                  setMenuOpen(false)
-                }
-                className="
-                  mt-4
-                  flex
-                  items-center
-                  justify-center
-                  rounded-full
-                  bg-[#38BDF8]
-                  px-5
-                  py-3.5
-                  text-sm
-                  font-semibold
-                  text-[#0B1120]
-                  hover:bg-[#0EA5E9]
-                "
-              >
-                ↓ &nbsp; Download CV
-              </a>
+                  <span className="text-[#38BDF8]/40">
+                    →
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
         </nav>

@@ -162,17 +162,7 @@ export default function Skills() {
           <div className="flex items-center gap-4">
             <span className="h-px w-12 bg-[#38BDF8]" />
 
-            <span
-              className="
-                text-[10px]
-                font-semibold
-                uppercase
-                tracking-[0.35em]
-                text-[#38BDF8]
-              "
-            >
-              Technical Skills
-            </span>
+            
           </div>
 
           <h2
@@ -289,17 +279,7 @@ export default function Skills() {
               "
             />
 
-            <span
-              className="
-                text-[9px]
-                font-semibold
-                uppercase
-                tracking-[0.3em]
-                text-[#64748B]
-              "
-            >
-              Technologies
-            </span>
+           
           </div>
 
           <span

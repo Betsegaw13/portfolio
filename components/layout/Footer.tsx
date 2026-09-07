@@ -1,8 +1,58 @@
 "use client";
 
+import { useEffect } from "react";
 import Container from "../ui/Container";
 
 export default function Footer() {
+  useEffect(() => {
+    const scriptId = "linkedin-badge-script";
+
+    const loadLinkedInBadge = () => {
+      const existingScript = document.getElementById(scriptId);
+
+      if (existingScript) {
+        // LinkedIn script is already loaded.
+        // Re-run it against the current DOM if available.
+        const linkedInWindow = window as typeof window & {
+          LI?: {
+            parse?: () => void;
+          };
+        };
+
+        linkedInWindow.LI?.parse?.();
+        return;
+      }
+
+      const script = document.createElement("script");
+
+      script.id = scriptId;
+      script.src =
+        "https://platform.linkedin.com/badges/js/profile.js";
+      script.async = true;
+      script.defer = true;
+
+      script.onload = () => {
+        const linkedInWindow = window as typeof window & {
+          LI?: {
+            parse?: () => void;
+          };
+        };
+
+        linkedInWindow.LI?.parse?.();
+      };
+
+      document.body.appendChild(script);
+    };
+
+    loadLinkedInBadge();
+
+    return () => {
+      // Intentionally don't remove the LinkedIn script.
+      // This allows it to remain available if the Footer
+      // re-renders during client navigation.
+    };
+  }, []);
+
   return (
     <footer
       className="
@@ -46,6 +96,10 @@ export default function Footer() {
       />
 
       <Container>
+        {/* ===================================================
+            MAIN FOOTER CONTENT
+            =================================================== */}
+
         <div
           className="
             relative
@@ -53,7 +107,7 @@ export default function Footer() {
             flex-col
             gap-10
             lg:flex-row
-            lg:items-center
+            lg:items-start
             lg:justify-between
           "
         >
@@ -90,7 +144,16 @@ export default function Footer() {
               Electrical & Computer Engineer
             </p>
 
-            <div className="mt-4 flex items-center justify-center gap-2 lg:justify-start">
+            <div
+              className="
+                mt-4
+                flex
+                items-center
+                justify-center
+                gap-2
+                lg:justify-start
+              "
+            >
               <span
                 className="
                   h-1.5
@@ -120,6 +183,7 @@ export default function Footer() {
               ================================================= */}
 
           <nav
+            aria-label="Footer navigation"
             className="
               flex
               flex-wrap
@@ -194,91 +258,133 @@ export default function Footer() {
               RIGHT — SOCIALS
               ================================================= */}
 
-          <div className="flex items-center justify-center gap-3">
-            <a
-              href="https://github.com/Betsegaw13"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub"
-              className="
-                flex
-                h-9
-                items-center
-                rounded-full
-                border
-                border-[#1E293B]
-                bg-[#0F172A]
-                px-4
-                text-[9px]
-                font-semibold
-                uppercase
-                tracking-[0.16em]
-                text-[#94A3B8]
-                transition-all
-                duration-300
-                hover:border-[#38BDF8]/30
-                hover:bg-[#111827]
-                hover:text-[#38BDF8]
-              "
-            >
-              GitHub
-            </a>
+          <div
+            className="
+              flex
+              flex-col
+              items-center
+              gap-5
+              lg:items-end
+            "
+          >
+            {/* SOCIAL BUTTONS */}
 
-            <a
-              href="https://et.linkedin.com/in/betsegaw-merid-92aa57306"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LinkedIn"
-              className="
-                flex
-                h-9
-                items-center
-                rounded-full
-                border
-                border-[#1E293B]
-                bg-[#0F172A]
-                px-4
-                text-[9px]
-                font-semibold
-                uppercase
-                tracking-[0.16em]
-                text-[#94A3B8]
-                transition-all
-                duration-300
-                hover:border-[#38BDF8]/30
-                hover:bg-[#111827]
-                hover:text-[#38BDF8]
-              "
-            >
-              LinkedIn
-            </a>
+            <div className="flex items-center justify-center gap-3">
+              <a
+                href="https://github.com/Betsegaw13"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                className="
+                  flex
+                  h-9
+                  items-center
+                  rounded-full
+                  border
+                  border-[#1E293B]
+                  bg-[#0F172A]
+                  px-4
+                  text-[9px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.16em]
+                  text-[#94A3B8]
+                  transition-all
+                  duration-300
+                  hover:border-[#38BDF8]/30
+                  hover:bg-[#111827]
+                  hover:text-[#38BDF8]
+                "
+              >
+                GitHub
+              </a>
 
-            <a
-              href="mailto:betsegaw.merid@aastustudent.edu.et"
-              aria-label="Email"
+              <a
+                href="https://et.linkedin.com/in/betsegaw-merid-92aa57306"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="
+                  flex
+                  h-9
+                  items-center
+                  rounded-full
+                  border
+                  border-[#1E293B]
+                  bg-[#0F172A]
+                  px-4
+                  text-[9px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.16em]
+                  text-[#94A3B8]
+                  transition-all
+                  duration-300
+                  hover:border-[#38BDF8]/30
+                  hover:bg-[#111827]
+                  hover:text-[#38BDF8]
+                "
+              >
+                LinkedIn
+              </a>
+
+              <a
+                href="mailto:betsegaw.merid@aastustudent.edu.et"
+                aria-label="Email"
+                className="
+                  flex
+                  h-9
+                  items-center
+                  rounded-full
+                  border
+                  border-[#1E293B]
+                  bg-[#0F172A]
+                  px-4
+                  text-[9px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.16em]
+                  text-[#94A3B8]
+                  transition-all
+                  duration-300
+                  hover:border-[#38BDF8]/30
+                  hover:bg-[#111827]
+                  hover:text-[#38BDF8]
+                "
+              >
+                Email
+              </a>
+            </div>
+
+            {/* =================================================
+                LINKEDIN BADGE
+                ================================================= */}
+
+            <div
               className="
                 flex
-                h-9
-                items-center
-                rounded-full
-                border
-                border-[#1E293B]
-                bg-[#0F172A]
-                px-4
-                text-[9px]
-                font-semibold
-                uppercase
-                tracking-[0.16em]
-                text-[#94A3B8]
-                transition-all
-                duration-300
-                hover:border-[#38BDF8]/30
-                hover:bg-[#111827]
-                hover:text-[#38BDF8]
+                w-full
+                justify-center
+                lg:justify-end
               "
             >
-              Email
-            </a>
+              <div
+                className="badge-base LI-profile-badge"
+                data-locale="en_US"
+                data-size="medium"
+                data-theme="dark"
+                data-type="VERTICAL"
+                data-vanity="betsegaw-merid-92aa57306"
+                data-version="v1"
+              >
+                <a
+                  className="badge-base__link LI-simple-link"
+                  href="https://et.linkedin.com/in/betsegaw-merid-92aa57306?trk=profile-badge"
+                >
+                  BETSEGAW MERID
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 

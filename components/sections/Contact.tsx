@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import Container from "../ui/Container";
 
 export default function Contact() {
@@ -12,6 +13,8 @@ export default function Contact() {
 
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
+
+  const shouldReduceMotion = useReducedMotion();
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -29,11 +32,7 @@ export default function Contact() {
   ) => {
     e.preventDefault();
 
-    if (
-      !form.name ||
-      !form.email ||
-      !form.message
-    ) {
+    if (!form.name || !form.email || !form.message) {
       setStatus("Please fill all fields.");
       return;
     }
@@ -59,14 +58,10 @@ export default function Contact() {
           message: "",
         });
       } else {
-        setStatus(
-          "Something went wrong."
-        );
+        setStatus("Something went wrong.");
       }
     } catch {
-      setStatus(
-        "Error sending message."
-      );
+      setStatus("Error sending message.");
     }
 
     setLoading(false);
@@ -75,91 +70,62 @@ export default function Contact() {
   return (
     <section
       id="contact"
-      className="
-        relative
-        overflow-hidden
-        bg-[#0B1120]
-        px-6
-        py-28
-        text-[#F8FAFC]
-        md:px-10
-        lg:py-36
-        scroll-mt-24
-      "
+      className="relative overflow-hidden bg-[#0B1120] px-6 py-24 text-[#F8FAFC] scroll-mt-24 sm:px-10 lg:px-16 lg:py-32 xl:px-20"
     >
       {/* =====================================================
-          BACKGROUND GRID
+          BACKGROUND
           ===================================================== */}
 
-      <div
-        aria-hidden="true"
-        className="
-          pointer-events-none
-          absolute
-          inset-0
-          opacity-40
-        "
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(56,189,248,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,0.025) 1px, transparent 1px)",
-          backgroundSize: "72px 72px",
-        }}
-      />
+      <div className="pointer-events-none absolute inset-0">
+        {/* Grid */}
+        <div
+          className="absolute inset-0 opacity-[0.025]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(56,189,248,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,0.8) 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
+          }}
+        />
 
-      {/* =====================================================
-          AMBIENT GLOW
-          ===================================================== */}
+        {/* Center glow */}
+        <div className="absolute left-1/2 top-[35%] h-[520px] w-[720px] -translate-x-1/2 rounded-full bg-[#38BDF8]/5 blur-[140px]" />
 
-      <div
-        aria-hidden="true"
-        className="
-          pointer-events-none
-          absolute
-          left-1/2
-          top-[35%]
-          h-[500px]
-          w-[700px]
-          -translate-x-1/2
-          rounded-full
-          blur-[120px]
-        "
-        style={{
-          background:
-            "radial-gradient(circle, rgba(14,165,233,0.045), transparent 70%)",
-        }}
-      />
+        {/* Side glow */}
+        <div className="absolute -right-32 bottom-0 h-[380px] w-[380px] rounded-full bg-[#38BDF8]/5 blur-[130px]" />
+      </div>
 
       <Container>
-        {/* ===================================================
+        {/* =====================================================
             HEADER
-            =================================================== */}
+            ===================================================== */}
 
-        <div className="relative mb-16 lg:mb-20">
-          
-
-          <div
-            className="
-              mt-7
-              flex
-              flex-col
-              gap-8
-              lg:flex-row
-              lg:items-end
-              lg:justify-between
-            "
-          >
+        <motion.div
+          initial={
+            shouldReduceMotion
+              ? false
+              : {
+                  opacity: 0,
+                  y: 35,
+                }
+          }
+          whileInView={{
+            opacity: 1,
+            y: 0,
+          }}
+          viewport={{
+            once: true,
+            amount: 0.2,
+          }}
+          transition={{
+            duration: 0.65,
+            ease: "easeOut",
+          }}
+          className="relative mb-16 lg:mb-20"
+        >
+          <div className="grid gap-8 lg:grid-cols-[1fr_0.65fr] lg:items-end lg:gap-20">
+            {/* Heading */}
             <div>
-              <h2
-                className="
-                  text-5xl
-                  font-bold
-                  uppercase
-                  leading-[0.9]
-                  tracking-[-0.055em]
-                  sm:text-6xl
-                  lg:text-8xl
-                "
-              >
+              <h2 className="text-5xl font-black leading-[0.88] tracking-[-0.055em] sm:text-6xl lg:text-8xl">
                 Let&apos;s
                 <br />
                 <span className="text-[#94A3B8]">
@@ -168,212 +134,133 @@ export default function Contact() {
               </h2>
             </div>
 
-            <p
-              className="
-                max-w-[470px]
-                text-sm
-                leading-7
-                text-[#64748B]
-                sm:text-base
-                sm:leading-8
-              "
-            >
-              Have a project, an idea, or
-              something you&apos;d like to discuss?
-              Send me a message and I&apos;ll get
-              back to you.
+            {/* Description */}
+            <p className="max-w-[470px] text-sm leading-7 text-[#64748B] sm:text-base sm:leading-8">
+              Have a project, an idea, or something
+              you&apos;d like to discuss? Send me a
+              message and I&apos;ll get back to you.
             </p>
           </div>
 
           <div className="mt-10 h-px w-full bg-[#1E293B]" />
-        </div>
+        </motion.div>
 
-        {/* ===================================================
-            CONTACT AREA
-            =================================================== */}
+        {/* =====================================================
+            CONTACT CONTENT
+            ===================================================== */}
 
-        <div
-          className="
-            grid
-            gap-12
-            lg:grid-cols-[0.8fr_1.2fr]
-            lg:gap-20
-          "
-        >
+        <div className="grid gap-10 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16 xl:gap-20">
           {/* =================================================
-              LEFT INFORMATION
+              LEFT
               ================================================= */}
 
-          <div className="flex flex-col justify-between">
+          <motion.div
+            initial={
+              shouldReduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    x: -35,
+                  }
+            }
+            whileInView={{
+              opacity: 1,
+              x: 0,
+            }}
+            viewport={{
+              once: true,
+              amount: 0.2,
+            }}
+            transition={{
+              duration: 0.65,
+              ease: "easeOut",
+            }}
+            className="flex flex-col"
+          >
             <div>
-              <p
-                className="
-                  text-[10px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.32em]
-                  text-[#38BDF8]
-                "
-              >
-                Open to opportunities
-              </p>
-
-              <h3
-                className="
-                  mt-5
-                  max-w-[420px]
-                  text-2xl
-                  font-semibold
-                  leading-tight
-                  tracking-[-0.03em]
-                  text-[#F8FAFC]
-                  sm:text-3xl
-                "
-              >
-                Let&apos;s build something
-                useful.
+              <h3 className="max-w-[440px] text-2xl font-semibold leading-tight tracking-[-0.03em] text-[#F8FAFC] sm:text-3xl">
+                Let&apos;s build something useful.
               </h3>
 
-              <p
-                className="
-                  mt-6
-                  max-w-[470px]
-                  text-sm
-                  leading-7
-                  text-[#94A3B8]
-                  sm:text-base
-                  sm:leading-8
-                "
-              >
+              <p className="mt-6 max-w-[470px] text-sm leading-7 text-[#94A3B8] sm:text-base sm:leading-8">
                 I&apos;m interested in working on
-                full-stack applications,
-                embedded systems, and projects
-                where software and hardware come
-                together.
+                full-stack applications, embedded
+                systems, and projects where
+                software and hardware come together.
               </p>
             </div>
 
-            {/* Contact metadata */}
-
-            <div className="mt-12 space-y-5">
-              <div
-                className="
-                  border-t
-                  border-[#1E293B]
-                  pt-5
-                "
-              >
-                <span
-                  className="
-                    block
-                    text-[9px]
-                    font-semibold
-                    uppercase
-                    tracking-[0.25em]
-                    text-[#475569]
-                  "
-                >
+            {/* Contact details */}
+            <div className="mt-12 space-y-4">
+              <div className="border-t border-[#1E293B] pt-5">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#475569]">
                   Availability
-                </span>
+                </p>
 
-                <span
-                  className="
-                    mt-2
-                    block
-                    text-sm
-                    text-[#CBD5E1]
-                  "
-                >
-                  Open to opportunities
-                </span>
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-[#38BDF8]" />
+
+                  <span className="text-sm text-[#CBD5E1]">
+                    Open to opportunities
+                  </span>
+                </div>
               </div>
 
-              <div
-                className="
-                  border-t
-                  border-[#1E293B]
-                  pt-5
-                "
-              >
-                <span
-                  className="
-                    block
-                    text-[9px]
-                    font-semibold
-                    uppercase
-                    tracking-[0.25em]
-                    text-[#475569]
-                  "
-                >
+              <div className="border-t border-[#1E293B] pt-5">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.25em] text-[#475569]">
                   Focus
-                </span>
+                </p>
 
-                <span
-                  className="
-                    mt-2
-                    block
-                    text-sm
-                    text-[#CBD5E1]
-                  "
-                >
+                <p className="mt-2 text-sm text-[#CBD5E1]">
                   Full-Stack · Embedded · UI / UX
-                </span>
+                </p>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* =================================================
               FORM
               ================================================= */}
 
-          <div
-            className="
-              relative
-              overflow-hidden
-              rounded-3xl
-              border
-              border-[#1E293B]
-              bg-[#0F172A]
-              p-6
-              sm:p-8
-              lg:p-10
-            "
+          <motion.div
+            initial={
+              shouldReduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    x: 35,
+                  }
+            }
+            whileInView={{
+              opacity: 1,
+              x: 0,
+            }}
+            viewport={{
+              once: true,
+              amount: 0.2,
+            }}
+            transition={{
+              duration: 0.65,
+              delay: shouldReduceMotion ? 0 : 0.1,
+              ease: "easeOut",
+            }}
+            className="relative overflow-hidden rounded-[28px] border border-[#1E293B] bg-[#0F172A]/75 p-5 shadow-[0_30px_80px_rgba(0,0,0,0.22)] backdrop-blur-xl sm:p-8 lg:p-10"
           >
-            {/* Accent line */}
+            {/* Left accent */}
+            <div className="absolute bottom-0 left-0 top-0 w-px bg-gradient-to-b from-[#38BDF8] via-[#38BDF8]/30 to-transparent" />
 
-            <div
-              aria-hidden="true"
-              className="
-                absolute
-                bottom-0
-                left-0
-                top-0
-                w-px
-                bg-gradient-to-b
-                from-[#38BDF8]
-                via-[#38BDF8]/30
-                to-transparent
-              "
-            />
+            {/* Top glow */}
+            <div className="pointer-events-none absolute right-0 top-0 h-40 w-40 rounded-full bg-[#38BDF8]/5 blur-3xl" />
 
             <form
               onSubmit={handleSubmit}
-              className="space-y-5"
+              className="relative space-y-5"
             >
               {/* Name */}
-
               <div>
                 <label
                   htmlFor="name"
-                  className="
-                    mb-2
-                    block
-                    text-[9px]
-                    font-semibold
-                    uppercase
-                    tracking-[0.25em]
-                    text-[#64748B]
-                  "
+                  className="mb-2 block text-[9px] font-semibold uppercase tracking-[0.25em] text-[#64748B]"
                 >
                   Name
                 </label>
@@ -386,43 +273,15 @@ export default function Contact() {
                   value={form.name}
                   onChange={handleChange}
                   disabled={loading}
-                  className="
-                    w-full
-                    rounded-xl
-                    border
-                    border-[#1E293B]
-                    bg-[#0B1120]
-                    px-4
-                    py-3.5
-                    text-sm
-                    text-[#F8FAFC]
-                    placeholder:text-[#475569]
-                    outline-none
-                    transition-all
-                    duration-300
-                    focus:border-[#38BDF8]/50
-                    focus:ring-1
-                    focus:ring-[#38BDF8]/20
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50
-                  "
+                  className="w-full rounded-xl border border-[#1E293B] bg-[#0B1120] px-4 py-3.5 text-sm text-[#F8FAFC] placeholder:text-[#475569] outline-none transition-all duration-300 focus:border-[#38BDF8]/50 focus:ring-1 focus:ring-[#38BDF8]/20 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
 
               {/* Email */}
-
               <div>
                 <label
                   htmlFor="email"
-                  className="
-                    mb-2
-                    block
-                    text-[9px]
-                    font-semibold
-                    uppercase
-                    tracking-[0.25em]
-                    text-[#64748B]
-                  "
+                  className="mb-2 block text-[9px] font-semibold uppercase tracking-[0.25em] text-[#64748B]"
                 >
                   Email
                 </label>
@@ -435,43 +294,15 @@ export default function Contact() {
                   value={form.email}
                   onChange={handleChange}
                   disabled={loading}
-                  className="
-                    w-full
-                    rounded-xl
-                    border
-                    border-[#1E293B]
-                    bg-[#0B1120]
-                    px-4
-                    py-3.5
-                    text-sm
-                    text-[#F8FAFC]
-                    placeholder:text-[#475569]
-                    outline-none
-                    transition-all
-                    duration-300
-                    focus:border-[#38BDF8]/50
-                    focus:ring-1
-                    focus:ring-[#38BDF8]/20
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50
-                  "
+                  className="w-full rounded-xl border border-[#1E293B] bg-[#0B1120] px-4 py-3.5 text-sm text-[#F8FAFC] placeholder:text-[#475569] outline-none transition-all duration-300 focus:border-[#38BDF8]/50 focus:ring-1 focus:ring-[#38BDF8]/20 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
 
               {/* Message */}
-
               <div>
                 <label
                   htmlFor="message"
-                  className="
-                    mb-2
-                    block
-                    text-[9px]
-                    font-semibold
-                    uppercase
-                    tracking-[0.25em]
-                    text-[#64748B]
-                  "
+                  className="mb-2 block text-[9px] font-semibold uppercase tracking-[0.25em] text-[#64748B]"
                 >
                   Message
                 </label>
@@ -483,133 +314,70 @@ export default function Contact() {
                   value={form.message}
                   onChange={handleChange}
                   disabled={loading}
-                  className="
-                    min-h-[170px]
-                    w-full
-                    resize-y
-                    rounded-xl
-                    border
-                    border-[#1E293B]
-                    bg-[#0B1120]
-                    px-4
-                    py-3.5
-                    text-sm
-                    leading-7
-                    text-[#F8FAFC]
-                    placeholder:text-[#475569]
-                    outline-none
-                    transition-all
-                    duration-300
-                    focus:border-[#38BDF8]/50
-                    focus:ring-1
-                    focus:ring-[#38BDF8]/20
-                    disabled:cursor-not-allowed
-                    disabled:opacity-50
-                  "
+                  className="min-h-[180px] w-full resize-y rounded-xl border border-[#1E293B] bg-[#0B1120] px-4 py-3.5 text-sm leading-7 text-[#F8FAFC] placeholder:text-[#475569] outline-none transition-all duration-300 focus:border-[#38BDF8]/50 focus:ring-1 focus:ring-[#38BDF8]/20 disabled:cursor-not-allowed disabled:opacity-50"
                 />
               </div>
 
               {/* Submit */}
-
-              <button
+              <motion.button
                 type="submit"
                 disabled={loading}
-                className="
-                  inline-flex
-                  w-full
-                  items-center
-                  justify-center
-                  gap-3
-                  rounded-xl
-                  bg-[#38BDF8]
-                  px-6
-                  py-3.5
-                  text-sm
-                  font-semibold
-                  text-[#0B1120]
-                  transition-all
-                  duration-300
-                  hover:bg-[#0EA5E9]
-                  disabled:cursor-not-allowed
-                  disabled:opacity-50
-                "
+                whileHover={
+                  shouldReduceMotion || loading
+                    ? undefined
+                    : {
+                        y: -2,
+                      }
+                }
+                whileTap={
+                  shouldReduceMotion || loading
+                    ? undefined
+                    : {
+                        scale: 0.98,
+                      }
+                }
+                className="inline-flex w-full items-center justify-center gap-3 rounded-full bg-gradient-to-r from-[#38BDF8] to-[#7DD3FC] px-6 py-3.5 text-sm font-bold text-[#0B1120] shadow-lg shadow-[#38BDF8]/10 transition-all duration-300 hover:from-[#0EA5E9] hover:to-[#38BDF8] hover:shadow-xl hover:shadow-[#38BDF8]/20 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {loading
-                  ? "Sending..."
-                  : "Send Message"}
+                {loading ? "Sending..." : "Send Message"}
 
                 {!loading && (
                   <span>→</span>
                 )}
-              </button>
+              </motion.button>
 
               {/* Status */}
-
               {status && (
-                <div
-                  className="
-                    rounded-xl
-                    border
-                    border-[#1E293B]
-                    bg-[#0B1120]
-                    px-4
-                    py-3
-                    text-center
-                  "
+                <motion.div
+                  initial={
+                    shouldReduceMotion
+                      ? false
+                      : {
+                          opacity: 0,
+                          y: 10,
+                        }
+                  }
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  className="rounded-xl border border-[#1E293B] bg-[#0B1120] px-4 py-3 text-center"
                 >
                   <p
-                    className={`
-                      text-sm
-                      font-medium
-                      ${
-                        status.includes(
-                          "success"
-                        )
-                          ? "text-[#38BDF8]"
-                          : "text-[#F87171]"
-                      }
-                    `}
+                    className={`text-sm font-medium ${
+                      status.includes("success")
+                        ? "text-[#38BDF8]"
+                        : "text-[#F87171]"
+                    }`}
                   >
                     {status}
                   </p>
-                </div>
+                </motion.div>
               )}
             </form>
-          </div>
+          </motion.div>
         </div>
 
-        {/* ===================================================
-            BOTTOM STATEMENT
-            =================================================== */}
-
-        <div
-          className="
-            mt-24
-            border-t
-            border-[#1E293B]
-            pt-8
-            text-center
-            sm:mt-28
-            sm:pt-10
-          "
-        >
-          <p
-            className="
-              mx-auto
-              max-w-[800px]
-              text-lg
-              font-medium
-              leading-8
-              text-[#CBD5E1]
-              sm:text-2xl
-            "
-          >
-            Have something worth building?{" "}
-            <span className="text-[#38BDF8]">
-              Let&apos;s talk.
-            </span>
-          </p>
-        </div>
+       
       </Container>
     </section>
   );
