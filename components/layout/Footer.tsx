@@ -299,34 +299,7 @@ export default function Footer() {
                 GitHub
               </a>
 
-              <a
-                href="https://et.linkedin.com/in/betsegaw-merid-92aa57306"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="
-                  flex
-                  h-9
-                  items-center
-                  rounded-full
-                  border
-                  border-[#1E293B]
-                  bg-[#0F172A]
-                  px-4
-                  text-[9px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.16em]
-                  text-[#94A3B8]
-                  transition-all
-                  duration-300
-                  hover:border-[#38BDF8]/30
-                  hover:bg-[#111827]
-                  hover:text-[#38BDF8]
-                "
-              >
-                LinkedIn
-              </a>
+             
 
               <a
                 href="mailto:betsegaw.merid@aastustudent.edu.et"
