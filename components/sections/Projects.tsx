@@ -1,14 +1,77 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import { projects } from "@/data/projects";
 import Container from "../ui/Container";
 import Card from "../ui/Card";
 
-export default function Projects() {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const [visibleProjects, setVisibleProjects] = useState<number[]>([]);
+function ProjectReveal({
+  children,
+  index,
+  className = "",
+}: {
+  children: ReactNode;
+  index: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const [visible, setVisible] = useState(false);
 
+  useEffect(() => {
+    const element = ref.current;
+
+    if (!element) return;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    if (prefersReducedMotion) {
+      setVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+
+        setVisible(true);
+        observer.unobserve(entry.target);
+      },
+      {
+        threshold: 0.08,
+        rootMargin: "0px 0px -80px 0px",
+      }
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible
+          ? "translateY(0px)"
+          : "translateY(50px)",
+        transition:
+          "opacity 750ms ease-out, transform 750ms cubic-bezier(0.22, 1, 0.36, 1)",
+        transitionDelay: visible
+          ? `${Math.min(index * 80, 400)}ms`
+          : "0ms",
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+export default function Projects() {
   const featuredProject = projects.find(
     (project) => project.featured
   );
@@ -17,54 +80,22 @@ export default function Projects() {
     (project) => !project.featured
   );
 
-  useEffect(() => {
-    const section = sectionRef.current;
-
-    if (!section) return;
-
-    const elements =
-      section.querySelectorAll<HTMLElement>(
-        "[data-project-index]"
-      );
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-
-          const index = Number(
-            entry.target.getAttribute(
-              "data-project-index"
-            )
-          );
-
-          setVisibleProjects((current) =>
-            current.includes(index)
-              ? current
-              : [...current, index]
-          );
-
-          observer.unobserve(entry.target);
-        });
-      },
-      {
-        threshold: 0.15,
-        rootMargin: "0px 0px -10% 0px",
-      }
-    );
-
-    elements.forEach((element) =>
-      observer.observe(element)
-    );
-
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <section
       id="projects"
-      ref={sectionRef}
-      className="relative overflow-hidden bg-[#0B1120] px-6 py-24 text-[#F8FAFC] sm:px-10 lg:px-16 lg:py-32 xl:px-20 scroll-mt-24"
+      className="
+        relative
+        overflow-hidden
+        bg-[#0B1120]
+        px-6
+        py-24
+        text-[#F8FAFC]
+        sm:px-10
+        lg:px-16
+        lg:py-32
+        xl:px-20
+        scroll-mt-24
+      "
     >
       {/* =====================================================
           BACKGROUND
@@ -91,10 +122,6 @@ export default function Projects() {
             =================================================== */}
 
         <div className="relative mb-16 max-w-[850px] lg:mb-20">
-          <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.35em] text-[#38BDF8] sm:text-xs">
-            Selected Work
-          </p>
-
           <h2 className="text-5xl font-black leading-[0.88] tracking-[-0.055em] sm:text-6xl lg:text-8xl">
             Projects
             <span className="text-[#94A3B8]">.</span>
@@ -112,19 +139,12 @@ export default function Projects() {
             =================================================== */}
 
         {featuredProject && (
-          <div
-            data-project-index="0"
-            className={`relative transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-              visibleProjects.includes(0)
-                ? "translate-y-0 opacity-100"
-                : "translate-y-14 opacity-0"
-            }`}
-          >
+          <ProjectReveal index={0}>
             <Card
               project={featuredProject}
               featured
             />
-          </div>
+          </ProjectReveal>
         )}
 
         {/* ===================================================
@@ -135,41 +155,37 @@ export default function Projects() {
           <div className="mt-16 lg:mt-24">
             <div className="mb-8 h-px w-full bg-[#1E293B]" />
 
-            <div className="mb-8">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.35em] text-[#38BDF8]">
-                More Work
-              </p>
-            </div>
+            <h3 className="mb-8 text-2xl font-semibold tracking-[-0.02em] text-[#F8FAFC] sm:text-3xl">
+              Other Projects
+            </h3>
 
             <div className="space-y-5">
-              {otherProjects.map(
-                (project, index) => {
-                  const projectIndex = index + 1;
-
-                  return (
-                    <div
-                      key={project.title}
-                      data-project-index={projectIndex}
-                      className={`transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                        visibleProjects.includes(
-                          projectIndex
-                        )
-                          ? "translate-y-0 opacity-100"
-                          : "translate-y-12 opacity-0"
-                      }`}
-                      style={{
-                        transitionDelay: `${index * 100}ms`,
-                      }}
-                    >
-                      <Card project={project} />
-                    </div>
-                  );
-                }
-              )}
+              {otherProjects.map((project, index) => (
+                <ProjectReveal
+                  key={project.title}
+                  index={index + 1}
+                >
+                  <Card project={project} />
+                </ProjectReveal>
+              ))}
             </div>
           </div>
         )}
-       </Container>
+
+        {/* ===================================================
+            CLOSING STATEMENT
+            =================================================== */}
+
+        <div className="flex justify-center px-4 pb-4 pt-24 text-center sm:pt-32 lg:pt-40">
+          <p className="max-w-[760px] text-2xl font-medium leading-[1.35] tracking-[-0.02em] text-[#94A3B8] sm:text-3xl lg:text-4xl">
+            I enjoy taking an idea, figuring out how it should work,
+            and turning it into a{" "}
+            <span className="text-[#38BDF8]">
+              working product.
+            </span>
+          </p>
+        </div>
+      </Container>
     </section>
   );
 }
