@@ -16,7 +16,7 @@ export const projects: Project[] = [
     description:
       "An intelligent network monitoring platform designed to analyze real-time LAN traffic, detect abnormal per-device usage, and dynamically optimize bandwidth distribution using feedback control logic.",
     tags: ["Python", "FastAPI", "React", "Networking"],
-    image: "/projects/AI.jpg",
+    image: "/projects/AII.jpg",
     liveUrl: "https://ai-powered-lan-traffic-and-bandwidt.vercel.app/",
     githubUrl: "https://github.com/Betsegaw13/AI-Powered-LAN-Traffic-and-Bandwidth-Management-System",
     featured: false,
