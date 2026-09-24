@@ -36,17 +36,42 @@ export const projects: Project[] = [
     year: "2025", 
 
   },
-  {
-   title: "GoEvents",
-    description:
-      "A modern event discovery and ticket booking platform that enables users to explore events, purchase tickets, and helps organizers manage their events through an intuitive web interface.",
-    tags: ["Web App", "Ticket Booking", "Internship Project"],
-    image: "/projects/goevents.jpg",
-    liveUrl: "",
-    githubUrl: "",
-    featured: true,
-     status: "In Progress",
-
+  
+ {
+  title: "SMARTRENT ET",
+  description:
+    "A full-stack rental management platform designed to streamline property rental processes, connecting landlords, tenants, and government officers through secure authentication, rental agreements, approval workflows, and payment management.",
+  tags: ["React", "TypeScript", "Node.js", "Express.js", "PostgreSQL", "Prisma"],
+  image: "/projects/smartrent.jpg",
+  liveUrl: "",
+  githubUrl: "https://github.com/Henok-SE/SmartRentET",
+  featured: true,
+  status: "Completed",
   year: "2026",
-  },
+},
+{
+  title: "Full-Stack E-Commerce Platform",
+  description:
+    "A complete e-commerce web application featuring product browsing, category organization, product details, shopping cart management, user authentication, order processing, RESTful APIs, PostgreSQL database integration, and deployment.",
+  tags: ["React", "Django", "Django REST Framework", "PostgreSQL"],
+  image: "/projects/store.png",
+  liveUrl: "https://code-alpha-ecommerce-store-pi.vercel.app/",
+  githubUrl: "https://github.com/Betsegaw13/CodeAlpha_ecommerce-store",
+  featured: true,
+  status: "Completed",
+  year: "2026",
+},
+
+{
+  title: "MeetSphere — Real-Time Video Meeting Platform",
+  description:
+    "A real-time video meeting and communication platform built with React, Node.js, and Express, integrating WebRTC for audio/video communication, Socket.IO for real-time interactions, JWT authentication, and PostgreSQL with Prisma ORM.",
+  tags: ["React", "Node.js", "Express", "WebRTC", "Socket.IO", "PostgreSQL"],
+  image: "/projects/meet.png",
+  liveUrl: "https://code-alpha-meet-sphere.vercel.app/",
+  githubUrl: "https://github.com/Betsegaw13/CodeAlpha_MeetSphere",
+  featured: true,
+  status: "Completed",
+  year: "2026",
+},
 ];
